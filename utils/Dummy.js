@@ -1,12 +1,18 @@
-const generatedData = {
-  text: "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quae fuga minus tempore esse corporis blanditiis obcaecati iste ea veritatis. Aut aspernatur iure consequuntur ad vel officia molestiae, explicabo ab repellendus.",
-  key: 1,
-};
+const largeLorem =
+  "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quidem, sapiente! Consectetur et dolorem nam tempora cupiditate debitis impedit non eligendi nesciunt labore nobis est, aliquid voluptas dolore aliquam praesentium adipisci corporis unde sed dicta neque? Maiores, quidem, numquam omnis quod optio soluta enim odio eligendi dolores esse beatae laborum expedita?";
 
-const addDummyData = (array, times) => {
+const addDummyData = (times) => {
+  let array = [];
+
   for (let i = 0; i < times; i++) {
-    generatedData.key += i;
-    array.push(generatedData);
+    array.push({
+      title: "lorem title",
+      text:
+        Math.random() < 0.5
+          ? largeLorem.slice(0, largeLorem.length / 2)
+          : largeLorem,
+      key: i + 1,
+    });
   }
 
   return array;

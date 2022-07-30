@@ -7,6 +7,7 @@ function NoteItem(props) {
         android_ripple={{ color: "#5F6368" }}
         onLongPress={() => props.onDeleteItem(props.id)}
       >
+        <Text style={styles.noteTitle}>{props.title || "Untitled"}</Text>
         <Text style={styles.noteText}>{props.text}</Text>
       </Pressable>
     </View>
@@ -26,8 +27,12 @@ const styles = StyleSheet.create({
   pressableItem: {
     opacity: 0.5,
   },
+  noteTitle: {
+    fontSize: 20,
+    padding: 10,
+    color: "white",
+  },
   noteText: {
-    fontWeight: "bold",
     padding: 10,
     color: "white",
   },

@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { StyleSheet, View, Text, SafeAreaView, Platform } from "react-native";
+import {
+  StyleSheet,
+  View,
+  SafeAreaView,
+  Platform,
+  ToastAndroid,
+  Text,
+} from "react-native";
 import { StatusBar } from "expo-status-bar";
 import NoteInput from "./components/NoteInput";
 import NoteItem from "./components/NoteItem";
@@ -13,13 +20,16 @@ export default function App() {
   const [showModal, setShowModal] = useState(false);
 
   function addNoteHandler(enteredNoteText) {
+    let key = Math.random().toString() + getTimeStamp();
     setNotes((currentNotes) => [
       ...currentNotes,
       {
-        text: getTimeStamp() + ": " + enteredNoteText,
-        key: Math.random().toString(),
+        title: enteredNoteText.title,
+        text: enteredNoteText.text,
+        key,
       },
     ]);
+    ToastAndroid.show("Note added", ToastAndroid.BOTTOM);
     setShowModal(false);
   }
 
@@ -31,6 +41,7 @@ export default function App() {
     setNotes((notes) => {
       return notes.filter((noteItem) => noteItem.key != key);
     });
+    ToastAndroid.show("Note deleted", ToastAndroid.BOTTOM);
   }
 
   return (
@@ -47,6 +58,11 @@ export default function App() {
             setShowModal={setShowModal}
             addNoteHandler={addNoteHandler}
           />
+          {notes.length === 0 && (
+            <View style={custom.emptyNotes}>
+              <Text style={custom.emptyNoteText}>The note list is empty. {"\n"}Press + to add one.</Text>
+            </View>
+          )}
           <MasonryList
             numColumns={2}
             data={notes}
@@ -57,6 +73,7 @@ export default function App() {
                     <View style={{ paddingTop: 40 }}></View>
                   )}
                   <NoteItem
+                    title={noteData.item.title}
                     text={noteData.item.text}
                     id={noteData.item.key}
                     onDeleteItem={deleteNoteHandler}
@@ -80,5 +97,14 @@ const custom = StyleSheet.create({
   },
   listNotesContainer: {
     flex: 1,
+  },
+  emptyNotes: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "flex-end",
+  },
+  emptyNoteText: {
+    color: "#FFFFFFAA",
+    textAlign: "center"
   },
 });

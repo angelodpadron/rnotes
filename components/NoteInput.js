@@ -3,62 +3,63 @@ import {
   StyleSheet,
   View,
   TextInput,
-  Button,
   Modal,
-  Alert,
 } from "react-native";
-
-// function addHandler(noteTitle, noteText) {
-//   setEnteredNoteText(enteredNote);
-// }
+import ActionButton from "./ActionButton";
 
 function NoteInput(props) {
-  // const [enteredNoteTitle, setEnteredNoteTitle] = useState("");
   const [enteredNoteText, setEnteredNoteText] = useState("");
+  const [enteredNoteTitle, setEnteredNoteTitle] = useState("");
+
+  function submitHandler() {
+    props.addNoteHandler({
+      title: enteredNoteTitle,
+      text: enteredNoteText,
+    });
+    setEnteredNoteTitle("");
+    setEnteredNoteText("");
+  }
+
+  function cancelHandler() {
+    setEnteredNoteTitle("");
+    setEnteredNoteText("");
+    props.setShowModal(false);
+  }
 
   return (
     <Modal visible={props.showModal} animationType="fade">
-      <View style={styles.inputContainer}>
-        {/* <TextInput
-          multiline
-          numberOfLines={2}
-          onChangeText={enteredTitle => setEnteredNoteTitle(enteredTitle)}
-          value={enteredNoteText}
-          style={styles.textInput}
-          placeholder="Title..."
-          placeholderTextColor="white"
-        /> */}
+      <View style={styles.formContainer}>
         <TextInput
           multiline
           numberOfLines={2}
-          onChangeText={enteredText => setEnteredNoteText(enteredText)}
+          onChangeText={(enteredTitle) => setEnteredNoteTitle(enteredTitle)}
+          value={enteredNoteTitle}
+          style={[styles.textInput, styles.titleInput]}
+          placeholder="Title"
+          placeholderTextColor="#FFFFFFAA"
+        />
+        <TextInput
+          multiline
+          onChangeText={(enteredText) => setEnteredNoteText(enteredText)}
           value={enteredNoteText}
           style={styles.textInput}
-          placeholder="Note..."
-          placeholderTextColor="white"
+          placeholder="Note"
+          placeholderTextColor="#FFFFFFAA"
         />
-        <View style={styles.buttonsContainer}>
-          <View style={styles.buttonContainer}>
-            <Button
-              title="submit"
-              color="#5F6368"
-              disabled={!enteredNoteText}
-              onPress={() => {
-                props.addNoteHandler(enteredNoteText);
-                setEnteredNoteText("");
-              }}
-            />
-          </View>
-          <View style={styles.buttonContainer}>
-            <Button
-              title="cancel"
-              color="red"
-              onPress={() => {
-                props.setShowModal(false);
-                setEnteredNoteText("");
-              }}
-            />
-          </View>
+      </View>
+      <View style={styles.buttonsContainer}>
+        <View style={styles.buttonContainer}>
+          <ActionButton
+            disabled={!Boolean(enteredNoteTitle && enteredNoteText)}
+            onPress={submitHandler}
+            imagePath={require("../assets/content-save.png")}
+          />
+        </View>
+        <View style={styles.buttonContainer}>
+          <ActionButton
+            onPress={cancelHandler}
+            imagePath={require("../assets/close.png")}
+          />
         </View>
       </View>
     </Modal>
@@ -68,24 +69,31 @@ function NoteInput(props) {
 export default NoteInput;
 
 const styles = StyleSheet.create({
-  textInput: {
-    width: "75%",
-    borderBottomWidth: 0.5,
-    borderBottomColor: "white",
-    fontWeight: "bold",
-    color: "white",
-  },
   inputContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: "#202124",
+  },
+  textInput: {
+    color: "#FFF",
+  },
+  titleInput: {
+    fontSize: 25,
+    fontWeight: "bold",
+    paddingBottom: 10,
+  },
+  formContainer: {
+    flex: 5,
+    padding: 30,
     backgroundColor: "#202124",
   },
   buttonsContainer: {
-    flexDirection: "row",
+    flex: 1,
+    justifyContent: "flex-end",
+    alignItems: "flex-end",
+    backgroundColor: "#202124",
   },
   buttonContainer: {
-    width: "40%",
-    padding: 10,
+    paddingTop: 10,
+    right: 30,
+    bottom: 30,
   },
 });
