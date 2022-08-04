@@ -1,15 +1,19 @@
-import { useState } from "react";
-import {
-  StyleSheet,
-  View,
-  TextInput,
-  Modal,
-} from "react-native";
+import { useEffect, useState } from "react";
+import { StyleSheet, View, TextInput, Modal } from "react-native";
 import ActionButton from "./ActionButton";
 
 function NoteInput(props) {
   const [enteredNoteText, setEnteredNoteText] = useState("");
   const [enteredNoteTitle, setEnteredNoteTitle] = useState("");
+  const [onEditMode, setOnEditMode] = useState(false);
+
+  useEffect(() => {
+    if (props.editNoteItem) {
+      setOnEditMode(true);
+      setEnteredNoteText(props.editNoteItem.text || "");
+      setEnteredNoteTitle(props.editNoteItem.title || "");
+    }
+  }, [props.showModal]);
 
   function submitHandler() {
     props.addNoteHandler({
@@ -20,9 +24,20 @@ function NoteInput(props) {
     setEnteredNoteText("");
   }
 
+  function updateHandler() {
+    props.updateNoteHandler({
+      title: enteredNoteTitle,
+      text: enteredNoteText,
+      key: props.editNoteItem.key,
+    });
+    setEnteredNoteText("");
+    setEnteredNoteText("");
+  }
+
   function cancelHandler() {
     setEnteredNoteTitle("");
     setEnteredNoteText("");
+    props.setSelectedNote(null);
     props.setShowModal(false);
   }
 
@@ -51,7 +66,7 @@ function NoteInput(props) {
         <View style={styles.buttonContainer}>
           <ActionButton
             disabled={!Boolean(enteredNoteTitle && enteredNoteText)}
-            onPress={submitHandler}
+            onPress={onEditMode ? updateHandler : submitHandler}
             imagePath={require("../assets/content-save.png")}
           />
         </View>
@@ -79,6 +94,8 @@ const styles = StyleSheet.create({
     fontSize: 25,
     fontWeight: "bold",
     paddingBottom: 10,
+  },
+  textInput: {
   },
   formContainer: {
     flex: 5,

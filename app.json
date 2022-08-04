@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "RNCourse",
-    "slug": "RNCourse",
-    "version": "1.0.0",
+    "name": "RNotes",
+    "slug": "RNotes",
+    "version": "0.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -24,7 +24,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "com.angelodpadron.rnotes"
     },
     "web": {
       "favicon": "./assets/favicon.png"

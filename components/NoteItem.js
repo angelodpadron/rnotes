@@ -5,6 +5,7 @@ function NoteItem(props) {
     <View style={styles.noteItem}>
       <Pressable
         android_ripple={{ color: "#5F6368" }}
+        onTouchEnd={() => props.onEditItem(props.id)}
         onLongPress={() => props.onDeleteItem(props.id)}
       >
         <Text style={styles.noteTitle}>{props.title || "Untitled"}</Text>

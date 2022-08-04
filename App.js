@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   StyleSheet,
   View,
@@ -10,17 +10,45 @@ import {
 import { StatusBar } from "expo-status-bar";
 import NoteInput from "./components/NoteInput";
 import NoteItem from "./components/NoteItem";
-import getTimeStamp from "./utils/TimeStamp";
 import MasonryList from "@react-native-seoul/masonry-list";
 import AddButton from "./components/AddButton";
-import addDummyData from "./utils/Dummy";
+import { storeNote, getAllNotes } from "./Storage";
 
 export default function App() {
+  const [updateStorage, setUpdateStorage] = useState(false);
   const [notes, setNotes] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [selectedNote, setSelectedNote] = useState(null);
+
+  useEffect(() => {
+    const initializeNotes = async () => {
+      getAllNotes()
+        .then((notes) => setNotes(notes))
+        .catch((error) => console.error(error));
+    };
+    const updateNotes = async (notes) => {
+      storeNote(notes)
+        .then(() => console.log("notes updated", notes))
+        .catch((error) => console.error(error));
+    };
+
+    if (!notes.length) {
+      initializeNotes();
+    }
+
+    if (updateStorage) {
+      updateNotes(notes);
+      setUpdateStorage(false);
+    }
+  }, [updateStorage]);
 
   function addNoteHandler(enteredNoteText) {
-    let key = Math.random().toString() + getTimeStamp();
+    let key =
+      Date.now().toString(36) +
+      Math.floor(
+        Math.pow(10, 12) + Math.random() * 9 * Math.pow(10, 12)
+      ).toString(36);
+
     setNotes((currentNotes) => [
       ...currentNotes,
       {
@@ -29,8 +57,23 @@ export default function App() {
         key,
       },
     ]);
-    ToastAndroid.show("Note added", ToastAndroid.BOTTOM);
+
+    setUpdateStorage(true);
     setShowModal(false);
+
+    ToastAndroid.show("Note added", ToastAndroid.BOTTOM);
+  }
+
+  function updateNoteHandler(noteObject) {
+    setNotes((notes) => {
+      return notes.filter((noteItem) => noteItem.key !== noteObject.key);
+    });
+    setNotes((currentNotes) => [...currentNotes, noteObject]);
+    setUpdateStorage(true);
+    setShowModal(false);
+    setSelectedNote(null);
+
+    ToastAndroid.show("Note updated", ToastAndroid.BOTTOM);
   }
 
   function startAddNoteHandler() {
@@ -39,9 +82,16 @@ export default function App() {
 
   function deleteNoteHandler(key) {
     setNotes((notes) => {
-      return notes.filter((noteItem) => noteItem.key != key);
+      return notes.filter((noteItem) => noteItem.key !== key);
     });
+    setUpdateStorage(true);
     ToastAndroid.show("Note deleted", ToastAndroid.BOTTOM);
+  }
+
+  function editNoteHandler(key) {
+    const selectedNote = notes.filter((note) => note.key === key);
+    setSelectedNote(selectedNote[0]);
+    setShowModal(true);
   }
 
   return (
@@ -57,18 +107,24 @@ export default function App() {
             showModal={showModal}
             setShowModal={setShowModal}
             addNoteHandler={addNoteHandler}
+            updateNoteHandler={updateNoteHandler}
+            setSelectedNote={setSelectedNote}
+            editNoteItem={selectedNote}
           />
           {notes.length === 0 && (
             <View style={custom.emptyNotes}>
-              <Text style={custom.emptyNoteText}>The note list is empty. {"\n"}Press + to add one.</Text>
+              <Text style={custom.emptyNoteText}>
+                No notes to display here. {"\n"}Press + to add one.
+              </Text>
             </View>
           )}
           <MasonryList
-            numColumns={2}
+            numColumns={notes.length < 2 ? 1 : 2}
             data={notes}
+            keyExtractor={(_, index) => index.toString()}
             renderItem={(noteData) => {
               return (
-                <>
+                <View key={1}>
                   {(noteData.i == 0 || noteData.i == 1) && (
                     <View style={{ paddingTop: 40 }}></View>
                   )}
@@ -77,8 +133,9 @@ export default function App() {
                     text={noteData.item.text}
                     id={noteData.item.key}
                     onDeleteItem={deleteNoteHandler}
+                    onEditItem={editNoteHandler}
                   />
-                </>
+                </View>
               );
             }}
           />
@@ -105,6 +162,6 @@ const custom = StyleSheet.create({
   },
   emptyNoteText: {
     color: "#FFFFFFAA",
-    textAlign: "center"
+    textAlign: "center",
   },
 });
