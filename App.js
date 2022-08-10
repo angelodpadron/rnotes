@@ -28,7 +28,6 @@ export default function App() {
     };
     const updateNotes = async (notes) => {
       storeNote(notes)
-        .then(() => console.log("notes updated", notes))
         .catch((error) => console.error(error));
     };
 
@@ -97,7 +96,7 @@ export default function App() {
   return (
     <>
       <StatusBar
-        style="inverted"
+        style="light"
         translucent={true}
         backgroundColor="rgba(32, 33, 36, 0.8)"
       />
@@ -149,7 +148,6 @@ export default function App() {
 const custom = StyleSheet.create({
   appContainer: {
     flex: 1,
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
     backgroundColor: "#202124",
   },
   listNotesContainer: {

@@ -4,12 +4,12 @@ function NoteItem(props) {
   return (
     <View style={styles.noteItem}>
       <Pressable
-        android_ripple={{ color: "#5F6368" }}
+        android_ripple={{ color: "#5F6368", borderless: true }}
         onTouchEnd={() => props.onEditItem(props.id)}
         onLongPress={() => props.onDeleteItem(props.id)}
       >
-        <Text style={styles.noteTitle}>{props.title || "Untitled"}</Text>
-        <Text style={styles.noteText}>{props.text}</Text>
+        <Text style={styles.noteTitle}>{props.title}</Text>
+        <Text numberOfLines={25} style={styles.noteText}>{props.text}</Text>
       </Pressable>
     </View>
   );
@@ -31,6 +31,7 @@ const styles = StyleSheet.create({
   noteTitle: {
     fontSize: 20,
     padding: 10,
+    fontWeight: "bold",
     color: "white",
   },
   noteText: {

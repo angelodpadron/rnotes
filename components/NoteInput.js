@@ -6,6 +6,7 @@ function NoteInput(props) {
   const [enteredNoteText, setEnteredNoteText] = useState("");
   const [enteredNoteTitle, setEnteredNoteTitle] = useState("");
   const [onEditMode, setOnEditMode] = useState(false);
+  const [hasChanged, setHasChanged] = useState(false);
 
   useEffect(() => {
     if (props.editNoteItem) {
@@ -30,15 +31,25 @@ function NoteInput(props) {
       text: enteredNoteText,
       key: props.editNoteItem.key,
     });
+    setEnteredNoteTitle("");
     setEnteredNoteText("");
-    setEnteredNoteText("");
+    setOnEditMode(false);
   }
 
   function cancelHandler() {
     setEnteredNoteTitle("");
     setEnteredNoteText("");
+    setOnEditMode(false);
     props.setSelectedNote(null);
     props.setShowModal(false);
+  }
+
+  function canSave() {
+    if (onEditMode) {
+      return hasChanged && Boolean(enteredNoteTitle && enteredNoteText);
+    }
+
+    return Boolean(enteredNoteTitle && enteredNoteText);
   }
 
   return (
@@ -47,17 +58,30 @@ function NoteInput(props) {
         <TextInput
           multiline
           numberOfLines={2}
-          onChangeText={(enteredTitle) => setEnteredNoteTitle(enteredTitle)}
+          maxLength={100}
+          onChangeText={(enteredTitle) => {
+            setEnteredNoteTitle(enteredTitle);
+            if (onEditMode) {
+              setHasChanged(true);
+            }
+          }}
           value={enteredNoteTitle}
           style={[styles.textInput, styles.titleInput]}
+          color={"#FFF"}
           placeholder="Title"
           placeholderTextColor="#FFFFFFAA"
         />
         <TextInput
           multiline
-          onChangeText={(enteredText) => setEnteredNoteText(enteredText)}
+          onChangeText={(enteredText) => {
+            setEnteredNoteText(enteredText);
+            if (onEditMode) {
+              setHasChanged(true);
+            }
+          }}
           value={enteredNoteText}
           style={styles.textInput}
+          color={"#FFF"}
           placeholder="Note"
           placeholderTextColor="#FFFFFFAA"
         />
@@ -65,7 +89,7 @@ function NoteInput(props) {
       <View style={styles.buttonsContainer}>
         <View style={styles.buttonContainer}>
           <ActionButton
-            disabled={!Boolean(enteredNoteTitle && enteredNoteText)}
+            disabled={!canSave()}
             onPress={onEditMode ? updateHandler : submitHandler}
             imagePath={require("../assets/content-save.png")}
           />
@@ -96,6 +120,8 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   textInput: {
+    // borderBottomColor: "white",
+    // borderWidth: 1
   },
   formContainer: {
     flex: 5,
