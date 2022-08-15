@@ -3,7 +3,6 @@ import {
   StyleSheet,
   View,
   SafeAreaView,
-  Platform,
   ToastAndroid,
   Text,
 } from "react-native";
@@ -11,14 +10,15 @@ import { StatusBar } from "expo-status-bar";
 import NoteInput from "./components/NoteInput";
 import NoteItem from "./components/NoteItem";
 import MasonryList from "@react-native-seoul/masonry-list";
-import AddButton from "./components/AddButton";
 import { storeNote, getAllNotes } from "./Storage";
+import ActionButton from "./components/ActionButton";
 
 export default function App() {
   const [updateStorage, setUpdateStorage] = useState(false);
   const [notes, setNotes] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedNote, setSelectedNote] = useState(null);
+  const [onScroll, setOnScroll] = useState(false)
 
   useEffect(() => {
     const initializeNotes = async () => {
@@ -27,8 +27,7 @@ export default function App() {
         .catch((error) => console.error(error));
     };
     const updateNotes = async (notes) => {
-      storeNote(notes)
-        .catch((error) => console.error(error));
+      storeNote(notes).catch((error) => console.error(error));
     };
 
     if (!notes.length) {
@@ -107,6 +106,7 @@ export default function App() {
             setShowModal={setShowModal}
             addNoteHandler={addNoteHandler}
             updateNoteHandler={updateNoteHandler}
+            deleteNoteHandler={deleteNoteHandler}
             setSelectedNote={setSelectedNote}
             editNoteItem={selectedNote}
           />
@@ -121,6 +121,8 @@ export default function App() {
             numColumns={notes.length < 2 ? 1 : 2}
             data={notes}
             keyExtractor={(_, index) => index.toString()}
+            onScroll={() => setOnScroll(true)}
+            onMomentumScrollEnd={() => setOnScroll(false)}
             renderItem={(noteData) => {
               return (
                 <View key={1}>
@@ -139,7 +141,13 @@ export default function App() {
             }}
           />
         </View>
-        <AddButton onPress={startAddNoteHandler} />
+        <View style={custom.addButtonContainer}>
+          <ActionButton
+            disabled={onScroll}
+            onPress={startAddNoteHandler}
+            imagePath={require("./assets/plus-thick.png")}
+          />
+        </View>
       </SafeAreaView>
     </>
   );
@@ -161,5 +169,12 @@ const custom = StyleSheet.create({
   emptyNoteText: {
     color: "#FFFFFFAA",
     textAlign: "center",
+  },
+  addButtonContainer: {
+    position: "absolute",
+    right: 30,
+    bottom: 30,
+    elevation: 3,
+    zIndex: 3,
   },
 });

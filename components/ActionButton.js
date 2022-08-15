@@ -6,7 +6,11 @@ function ActionButton(props) {
       disabled={props.disabled}
       style={[
         styles.actionButton,
-        props.disabled ? styles.disabled : styles.enabled,
+        props.disabled
+          ? (props.disabledColor && { backgroundColor: props.disabledColor }) ||
+            styles.defaultDisabledColor
+          : (props.enabledColor && { backgroundColor: props.enabledColor }) ||
+            styles.defaultEnabledColor,
       ]}
       activeOpacity={0.7}
       onPress={props.onPress}
@@ -26,10 +30,10 @@ const styles = StyleSheet.create({
     height: 60,
     borderRadius: 100,
   },
-  enabled: {
+  defaultEnabledColor: {
     backgroundColor: "#FFF",
   },
-  disabled: {
+  defaultDisabledColor: {
     backgroundColor: "#FFFFFF55",
   },
 });

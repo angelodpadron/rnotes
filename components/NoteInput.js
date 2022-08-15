@@ -11,8 +11,13 @@ function NoteInput(props) {
   useEffect(() => {
     if (props.editNoteItem) {
       setOnEditMode(true);
-      setEnteredNoteText(props.editNoteItem.text || "");
-      setEnteredNoteTitle(props.editNoteItem.title || "");
+      setHasChanged(false);
+      setEnteredNoteText(props.editNoteItem.text);
+      setEnteredNoteTitle(props.editNoteItem.title);
+    } else {
+      setOnEditMode(false);
+      setEnteredNoteText("");
+      setEnteredNoteTitle("");
     }
   }, [props.showModal]);
 
@@ -21,8 +26,6 @@ function NoteInput(props) {
       title: enteredNoteTitle,
       text: enteredNoteText,
     });
-    setEnteredNoteTitle("");
-    setEnteredNoteText("");
   }
 
   function updateHandler() {
@@ -31,17 +34,17 @@ function NoteInput(props) {
       text: enteredNoteText,
       key: props.editNoteItem.key,
     });
-    setEnteredNoteTitle("");
-    setEnteredNoteText("");
-    setOnEditMode(false);
   }
 
   function cancelHandler() {
-    setEnteredNoteTitle("");
-    setEnteredNoteText("");
-    setOnEditMode(false);
     props.setSelectedNote(null);
     props.setShowModal(false);
+  }
+
+  function deleteHandler() {
+    props.setSelectedNote(null);
+    props.setShowModal(false);
+    props.deleteNoteHandler(props.editNoteItem.key);
   }
 
   function canSave() {
@@ -96,6 +99,15 @@ function NoteInput(props) {
         </View>
         <View style={styles.buttonContainer}>
           <ActionButton
+            disabled={!onEditMode}
+            onPress={deleteHandler}
+            enabledColor="#DC3545"
+            disabledColor="#DC354555"
+            imagePath={require("../assets/delete.png")}
+          />
+        </View>
+        <View style={styles.buttonContainer}>
+          <ActionButton
             onPress={cancelHandler}
             imagePath={require("../assets/close.png")}
           />
@@ -119,24 +131,19 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     paddingBottom: 10,
   },
-  textInput: {
-    // borderBottomColor: "white",
-    // borderWidth: 1
-  },
   formContainer: {
-    flex: 5,
+    flex: 1,
     padding: 30,
     backgroundColor: "#202124",
   },
   buttonsContainer: {
-    flex: 1,
-    justifyContent: "flex-end",
-    alignItems: "flex-end",
-    backgroundColor: "#202124",
+    position: "absolute",
+    right: 30,
+    bottom: 30,
+    elevation: 3,
+    zIndex: 3,
   },
   buttonContainer: {
     paddingTop: 10,
-    right: 30,
-    bottom: 30,
   },
 });

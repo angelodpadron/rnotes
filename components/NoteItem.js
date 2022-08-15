@@ -1,15 +1,25 @@
-import { StyleSheet, View, Text, Pressable } from "react-native";
+import { StyleSheet, View, Text, Pressable, ToastAndroid } from "react-native";
+import * as Clipboard from "expo-clipboard";
 
 function NoteItem(props) {
+  const copyToClipboard = async () => {
+    await Clipboard.setStringAsync(props.title + "\n\n" + props.text);
+  };
+
   return (
     <View style={styles.noteItem}>
       <Pressable
         android_ripple={{ color: "#5F6368", borderless: true }}
-        onTouchEnd={() => props.onEditItem(props.id)}
-        onLongPress={() => props.onDeleteItem(props.id)}
+        onPress={() => props.onEditItem(props.id)}
+        onLongPress={() => {
+          copyToClipboard();
+          ToastAndroid.show("Copied to clipboard", ToastAndroid.BOTTOM);
+        }}
       >
         <Text style={styles.noteTitle}>{props.title}</Text>
-        <Text numberOfLines={25} style={styles.noteText}>{props.text}</Text>
+        <Text numberOfLines={25} style={styles.noteText}>
+          {props.text}
+        </Text>
       </Pressable>
     </View>
   );
