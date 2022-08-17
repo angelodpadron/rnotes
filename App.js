@@ -12,13 +12,15 @@ import NoteItem from "./components/NoteItem";
 import MasonryList from "@react-native-seoul/masonry-list";
 import { storeNote, getAllNotes } from "./Storage";
 import ActionButton from "./components/ActionButton";
+import * as Clipboard from "expo-clipboard";
 
 export default function App() {
   const [updateStorage, setUpdateStorage] = useState(false);
   const [notes, setNotes] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedNote, setSelectedNote] = useState(null);
-  const [onScroll, setOnScroll] = useState(false)
+  const [onScroll, setOnScroll] = useState(false);
+  const [selectedNotes, setSelectedNotes] = useState([]);
 
   useEffect(() => {
     const initializeNotes = async () => {
@@ -86,10 +88,36 @@ export default function App() {
     ToastAndroid.show("Note deleted", ToastAndroid.BOTTOM);
   }
 
+  function deleteSelectedNotesHandler() {
+    setNotes((notes) => {
+      return notes.filter((noteItem) => !selectedNotes.includes(noteItem.key));
+    });
+    setSelectedNotes([]);
+    setUpdateStorage(true);
+    ToastAndroid.show("Note deleted", ToastAndroid.BOTTOM);
+  }
+
   function editNoteHandler(key) {
     const selectedNote = notes.filter((note) => note.key === key);
     setSelectedNote(selectedNote[0]);
     setShowModal(true);
+  }
+
+  function selectedNotesHandler(key) {
+    if (selectedNotes.some((noteKey) => noteKey === key)) {
+      setSelectedNotes((noteKeys) => {
+        return noteKeys.filter((noteKey) => noteKey !== key);
+      });
+    } else {
+      setSelectedNotes((currentNotes) => [...currentNotes, key]);
+    }
+  }
+
+  async function clipboardHandler() {
+    let selectedNote = notes.find((note) => note.key == selectedNotes[0]);
+    await Clipboard.setStringAsync(
+      selectedNote.title + "\n\n" + selectedNote.text
+    );
   }
 
   return (
@@ -135,18 +163,41 @@ export default function App() {
                     id={noteData.item.key}
                     onDeleteItem={deleteNoteHandler}
                     onEditItem={editNoteHandler}
+                    onSelectNote={selectedNotesHandler}
                   />
                 </View>
               );
             }}
           />
         </View>
-        <View style={custom.addButtonContainer}>
-          <ActionButton
-            disabled={onScroll}
-            onPress={startAddNoteHandler}
-            imagePath={require("./assets/plus-thick.png")}
-          />
+        <View style={custom.buttonsContainer}>
+          {selectedNotes.length > 0 && (
+            <View style={custom.buttonContainer}>
+              <ActionButton
+                onPress={deleteSelectedNotesHandler}
+                disabled={onScroll}
+                enabledColor="#DC3545"
+                disabledColor="#DC354555"
+                imagePath={require("./assets/delete.png")}
+              />
+            </View>
+          )}
+          {selectedNotes.length == 1 && (
+            <View style={custom.buttonContainer}>
+              <ActionButton
+                onPress={clipboardHandler}
+                disabled={onScroll}
+                imagePath={require("./assets/clipboard.png")}
+              />
+            </View>
+          )}
+          <View style={custom.buttonContainer}>
+            <ActionButton
+              disabled={onScroll}
+              onPress={startAddNoteHandler}
+              imagePath={require("./assets/plus-thick.png")}
+            />
+          </View>
         </View>
       </SafeAreaView>
     </>
@@ -170,11 +221,14 @@ const custom = StyleSheet.create({
     color: "#FFFFFFAA",
     textAlign: "center",
   },
-  addButtonContainer: {
+  buttonsContainer: {
     position: "absolute",
     right: 30,
     bottom: 30,
     elevation: 3,
     zIndex: 3,
+  },
+  buttonContainer: {
+    paddingTop: 10,
   },
 });
