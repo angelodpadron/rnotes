@@ -2,49 +2,57 @@ import { useEffect, useState } from "react";
 import { StyleSheet, View, TextInput, Modal } from "react-native";
 import ActionButton from "./ActionButton";
 
-function NoteInput(props) {
+function NoteInput({
+  addNoteHandler,
+  updateNoteHandler,
+  deleteNoteHandler,
+  editNoteItem,
+  setEditNote,
+  showModal,
+  setShowModal,
+}) {
   const [enteredNoteText, setEnteredNoteText] = useState("");
   const [enteredNoteTitle, setEnteredNoteTitle] = useState("");
   const [onEditMode, setOnEditMode] = useState(false);
   const [hasChanged, setHasChanged] = useState(false);
 
   useEffect(() => {
-    if (props.editNoteItem) {
+    if (editNoteItem) {
       setOnEditMode(true);
       setHasChanged(false);
-      setEnteredNoteText(props.editNoteItem.text);
-      setEnteredNoteTitle(props.editNoteItem.title);
+      setEnteredNoteText(editNoteItem.text);
+      setEnteredNoteTitle(editNoteItem.title);
     } else {
       setOnEditMode(false);
       setEnteredNoteText("");
       setEnteredNoteTitle("");
     }
-  }, [props.showModal]);
+  }, [showModal]);
 
   function submitHandler() {
-    props.addNoteHandler({
-      title: enteredNoteTitle,
-      text: enteredNoteText,
+    addNoteHandler({
+      title: enteredNoteTitle.trim(),
+      text: enteredNoteText.trim(),
     });
   }
 
   function updateHandler() {
-    props.updateNoteHandler({
-      title: enteredNoteTitle,
-      text: enteredNoteText,
-      key: props.editNoteItem.key,
+    updateNoteHandler({
+      title: enteredNoteTitle.trim(),
+      text: enteredNoteText.trim(),
+      key: editNoteItem.key,
     });
   }
 
   function cancelHandler() {
-    props.setSelectedNote(null);
-    props.setShowModal(false);
+    setEditNote(null);
+    setShowModal(false);
   }
 
   function deleteHandler() {
-    props.setSelectedNote(null);
-    props.setShowModal(false);
-    props.deleteNoteHandler(props.editNoteItem.key);
+    setEditNote(null);
+    setShowModal(false);
+    deleteNoteHandler(editNoteItem.key);
   }
 
   function canSave() {
@@ -56,7 +64,7 @@ function NoteInput(props) {
   }
 
   return (
-    <Modal visible={props.showModal} animationType="fade">
+    <Modal visible={showModal} animationType="fade">
       <View style={styles.formContainer}>
         <TextInput
           multiline
@@ -101,8 +109,8 @@ function NoteInput(props) {
           <ActionButton
             disabled={!onEditMode}
             onPress={deleteHandler}
-            enabledColor="#DC3545"
-            disabledColor="#DC354555"
+            enabledColor="#E94235"
+            disabledColor="#E9423555"
             imagePath={require("../assets/delete.png")}
           />
         </View>
@@ -138,12 +146,12 @@ const styles = StyleSheet.create({
   },
   buttonsContainer: {
     position: "absolute",
-    right: 30,
-    bottom: 30,
+    right: 15,
+    bottom: 15,
     elevation: 3,
     zIndex: 3,
   },
   buttonContainer: {
-    paddingTop: 10,
+    padding: 5,
   },
 });

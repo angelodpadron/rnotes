@@ -1,35 +1,34 @@
-import { StyleSheet, View, Text, Pressable, ToastAndroid } from "react-native";
-import * as Clipboard from "expo-clipboard";
-import { useState } from "react";
+import { StyleSheet, View, Text, Pressable } from "react-native";
 
-function NoteItem(props) {
-  const [isSelected, setIsSelected] = useState(false);
-
-  const copyToClipboard = async () => {
-    await Clipboard.setStringAsync(props.title + "\n\n" + props.text);
-  };
-
-  const onSelectionHandler = () => {
-    setIsSelected(!isSelected);
-    props.onSelectNote(props.id)
+function NoteItem({
+  onSelectNote,
+  onEditItem,
+  selectedNotes,
+  id,
+  title,
+  text,
+}) {
+  const onSelectionHandler = () => onSelectNote(id);
+  const isSelected = () =>
+    selectedNotes.some((selectedId) => selectedId === id);
+  const onPressHandler = () => {
+    if (selectedNotes.length) {
+      onSelectionHandler();
+    } else {
+      onEditItem(id);
+    }
   };
 
   return (
-    <View style={[styles.noteItem, isSelected ? styles.selected : {}]}>
+    <View style={[styles.noteItem, isSelected() ? styles.selected : {}]}>
       <Pressable
         android_ripple={{ color: "#5F6368", borderless: true }}
-        onPress={() => {
-          props.onEditItem(props.id);
-        }}
-        onLongPress={() => {
-          onSelectionHandler();
-          // copyToClipboard();
-          // ToastAndroid.show("Copied to clipboard", ToastAndroid.BOTTOM);
-        }}
+        onPress={onPressHandler}
+        onLongPress={() => onSelectionHandler()}
       >
-        <Text style={styles.noteTitle}>{props.title}</Text>
+        <Text style={styles.noteTitle}>{title}</Text>
         <Text numberOfLines={25} style={styles.noteText}>
-          {props.text}
+          {text}
         </Text>
       </Pressable>
     </View>

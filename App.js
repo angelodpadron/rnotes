@@ -18,7 +18,7 @@ export default function App() {
   const [updateStorage, setUpdateStorage] = useState(false);
   const [notes, setNotes] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [selectedNote, setSelectedNote] = useState(null);
+  const [editNote, setEditNote] = useState(null);
   const [onScroll, setOnScroll] = useState(false);
   const [selectedNotes, setSelectedNotes] = useState([]);
 
@@ -98,8 +98,8 @@ export default function App() {
   }
 
   function editNoteHandler(key) {
-    const selectedNote = notes.filter((note) => note.key === key);
-    setSelectedNote(selectedNote[0]);
+    const editNote = notes.filter((note) => note.key === key)[0];
+    setEditNote(editNote);
     setShowModal(true);
   }
 
@@ -135,8 +135,8 @@ export default function App() {
             addNoteHandler={addNoteHandler}
             updateNoteHandler={updateNoteHandler}
             deleteNoteHandler={deleteNoteHandler}
-            setSelectedNote={setSelectedNote}
-            editNoteItem={selectedNote}
+            setEditNote={setEditNote}
+            editNoteItem={editNote}
           />
           {notes.length === 0 && (
             <View style={custom.emptyNotes}>
@@ -164,6 +164,7 @@ export default function App() {
                     onDeleteItem={deleteNoteHandler}
                     onEditItem={editNoteHandler}
                     onSelectNote={selectedNotesHandler}
+                    selectedNotes={selectedNotes}
                   />
                 </View>
               );
@@ -176,8 +177,8 @@ export default function App() {
               <ActionButton
                 onPress={deleteSelectedNotesHandler}
                 disabled={onScroll}
-                enabledColor="#DC3545"
-                disabledColor="#DC354555"
+                enabledColor="#E94235"
+                disabledColor="#E9423555"
                 imagePath={require("./assets/delete.png")}
               />
             </View>
@@ -222,13 +223,15 @@ const custom = StyleSheet.create({
     textAlign: "center",
   },
   buttonsContainer: {
+    // flexDirection: "row",
     position: "absolute",
-    right: 30,
-    bottom: 30,
+    right: 15,
+    bottom: 15,
     elevation: 3,
     zIndex: 3,
   },
   buttonContainer: {
-    paddingTop: 10,
+    padding: 5,
+    // paddingHorizontal: 5,
   },
 });

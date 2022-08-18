@@ -1,21 +1,27 @@
 import { Image, TouchableOpacity, StyleSheet } from "react-native";
 
-function ActionButton(props) {
+function ActionButton({
+  disabled,
+  onPress,
+  imagePath,
+  disabledColor,
+  enabledColor,
+}) {
   return (
     <TouchableOpacity
-      disabled={props.disabled}
+      disabled={disabled}
       style={[
         styles.actionButton,
-        props.disabled
-          ? (props.disabledColor && { backgroundColor: props.disabledColor }) ||
+        disabled
+          ? (disabledColor && { backgroundColor: disabledColor }) ||
             styles.defaultDisabledColor
-          : (props.enabledColor && { backgroundColor: props.enabledColor }) ||
+          : (enabledColor && { backgroundColor: enabledColor }) ||
             styles.defaultEnabledColor,
       ]}
       activeOpacity={0.7}
-      onPress={props.onPress}
+      onPress={onPress}
     >
-      <Image source={props.imagePath} />
+      <Image source={imagePath} />
     </TouchableOpacity>
   );
 }
@@ -28,7 +34,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     width: 60,
     height: 60,
-    borderRadius: 100,
+    borderRadius: 15,
   },
   defaultEnabledColor: {
     backgroundColor: "#FFF",
