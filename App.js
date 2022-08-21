@@ -54,6 +54,7 @@ export default function App() {
       {
         title: enteredNoteText.title,
         text: enteredNoteText.text,
+        date: enteredNoteText.date,
         key,
       },
     ]);
@@ -71,7 +72,7 @@ export default function App() {
     setNotes((currentNotes) => [...currentNotes, noteObject]);
     setUpdateStorage(true);
     setShowModal(false);
-    setSelectedNote(null);
+    setEditNote(null);
 
     ToastAndroid.show("Note updated", ToastAndroid.BOTTOM);
   }
@@ -160,6 +161,7 @@ export default function App() {
                   <NoteItem
                     title={noteData.item.title}
                     text={noteData.item.text}
+                    date={noteData.item.date}
                     id={noteData.item.key}
                     onDeleteItem={deleteNoteHandler}
                     onEditItem={editNoteHandler}

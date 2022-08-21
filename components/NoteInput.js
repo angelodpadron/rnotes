@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { StyleSheet, View, TextInput, Modal } from "react-native";
+import { StyleSheet, View, TextInput, Modal, Text } from "react-native";
+import getTimeStamp from "../utils/Timestamp";
 import ActionButton from "./ActionButton";
 
 function NoteInput({
@@ -33,6 +34,7 @@ function NoteInput({
     addNoteHandler({
       title: enteredNoteTitle.trim(),
       text: enteredNoteText.trim(),
+      date: getTimeStamp(),
     });
   }
 
@@ -41,6 +43,7 @@ function NoteInput({
       title: enteredNoteTitle.trim(),
       text: enteredNoteText.trim(),
       key: editNoteItem.key,
+      date: getTimeStamp(),
     });
   }
 
@@ -84,6 +87,7 @@ function NoteInput({
         />
         <TextInput
           multiline
+          maxLength={1500}
           onChangeText={(enteredText) => {
             setEnteredNoteText(enteredText);
             if (onEditMode) {
@@ -97,6 +101,13 @@ function NoteInput({
           placeholderTextColor="#FFFFFFAA"
         />
       </View>
+      {editNoteItem && (
+        <View style={styles.timeStampContainer}>
+          <Text style={{ color: "#CCC" }}>
+            Last update: {editNoteItem.date}
+          </Text>
+        </View>
+      )}
       <View style={styles.buttonsContainer}>
         <View style={styles.buttonContainer}>
           <ActionButton
@@ -153,5 +164,10 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     padding: 5,
+  },
+  timeStampContainer: {
+    position: "absolute",
+    left: 15,
+    bottom: 15,
   },
 });
